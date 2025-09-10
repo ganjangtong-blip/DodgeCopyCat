@@ -1,16 +1,19 @@
+using TMPro;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     public Rigidbody playerRigidbody;
-    public float speed = 20f;
+    public float speed =5f;
+
+    private GameManager gameManager;
 
     void Start()
     {
         playerRigidbody = GetComponent<Rigidbody>();
+        gameManager = FindFirstObjectByType<GameManager>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         float xInput = Input.GetAxis("Horizontal");
@@ -22,22 +25,26 @@ public class Player : MonoBehaviour
         Vector3 newVelocity = new Vector3(xSpeed, 0f, zSpeed);
         playerRigidbody.linearVelocity = newVelocity;
 
-
-        // 1. 플레이어가 움직이고 있을 때만 회전하도록 처리
         if (newVelocity != Vector3.zero)
         {
-            // 2. newVelocity 방향으로 바라보는 목표 회전값(Quaternion)을 만듭니다.
             Quaternion targetRotation = Quaternion.LookRotation(newVelocity);
+            playerRigidbody.rotation = Quaternion.Slerp(playerRigidbody.rotation, targetRotation, Time.deltaTime * 5f);
+        }
+    }
 
-            // 3. 현재 회전값에서 목표 회전값으로 부드럽게 회전시킵니다.
-            // Time.deltaTime을 곱해줘서 프레임에 상관없이 일정한 속도로 회전하게 합니다.
-            // 마지막 10f는 회전 속도로, 숫자가 클수록 빠르게 회전합니다.
-            playerRigidbody.rotation = Quaternion.Slerp(playerRigidbody.rotation, targetRotation, Time.deltaTime * 15f);
+    // 아이템 충돌 시 GameManager에 점수 추가 요청
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Item"))
+        {
+            gameManager.AddScore(1); // 점수 1 추가
+            Destroy(other.gameObject);
         }
     }
 
     public void Die()
     {
         gameObject.SetActive(false);
+        gameManager.EndGame();
     }
 }

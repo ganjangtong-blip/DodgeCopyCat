@@ -35,6 +35,8 @@ public class ItemSpawner : MonoBehaviour
 
         // 계산된 위치에 itemPrefab을 생성
         Instantiate(itemPrefab, spawnPosition, Quaternion.identity);
+
+        
     }
 
     // Scene 뷰에서 생성 영역을 시각적으로 보여주는 기능 (개발 편의용)
