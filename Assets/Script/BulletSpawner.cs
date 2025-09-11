@@ -26,10 +26,21 @@ public class BulletSpawner : MonoBehaviour
         if (timeAfterSpawn >= spawnRate)
         {
             timeAfterSpawn = 0f;
-            GameObject bullet = Instantiate(bulletPrefab, transform.position, transform.rotation);
-            bullet.transform.LookAt(target);
+
+            // 스포너의 x, z 좌표 + 플레이어의 y 좌표
+            Vector3 spawnPos = new Vector3(transform.position.x, target.position.y, transform.position.z);
+
+            // 총알 생성
+            GameObject bullet = Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
+
+            // 총알이 플레이어를 향하도록 회전
+            bullet.transform.LookAt(target.position);
+
             spawnRate = Random.Range(spawnRateMin, spawnRateMax);
         }
-        
+
     }
+
+
 }
+
